@@ -1,0 +1,87 @@
+import java.util.*;
+
+
+class Graph {
+    private int V; 
+    private List<Integer>[] adjacencyList; 
+
+    public Graph(int V) {
+        this.V = V;
+        adjacencyList = new ArrayList[V];
+        for (int i = 0; i < V; i++) {
+            adjacencyList[i] = new ArrayList<>();
+        }
+    }
+
+  
+    public void addEdge(int u, int v) {
+        adjacencyList[u].add(v);
+        adjacencyList[v].add(u);
+    }
+
+    
+    public int findMinColors() {
+        if (V == 0) return 0; // brak wierzchołków
+
+        int[] colors = new int[V]; // tablica przechowująca kolory wierzchołków
+        Arrays.fill(colors, -1); // -1 oznacza, że wierzchołek nie jest jeszcze pokolorowany
+
+      
+        for (int v = 0; v < V; v++) {
+            if (colors[v] == -1) {
+                // Jeśli wierzchołek nie jest jeszcze pokolorowany, to pokoloruj go
+                greedyColoring(v, colors);
+            }
+        }
+
+      
+        int maxColor = 0;
+        for (int color : colors) {
+            if (color > maxColor) {
+                maxColor = color;
+            }
+        }
+
+       
+        return maxColor + 1;
+    }
+
+    
+    private void greedyColoring(int v, int[] colors) {
+        Set<Integer> usedColors = new HashSet<>();
+        
+        for (int neighbor : adjacencyList[v]) {
+            if (colors[neighbor] != -1) {
+                usedColors.add(colors[neighbor]);
+            }
+        }
+        
+        for (int color = 0; color < V; color++) {
+            if (!usedColors.contains(color)) {
+                colors[v] = color;
+                break;
+            }
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        
+        int V = 6; // liczba wierzchołków
+        Graph graph = new Graph(V);
+
+      
+        graph.addEdge(0, 1);
+        graph.addEdge(0, 2);
+        graph.addEdge(1, 3);
+        graph.addEdge(2, 3);
+        graph.addEdge(3, 4);
+        graph.addEdge(4, 5);
+        graph.addEdge(5, 0);
+
+       
+        int minColors = graph.findMinColors();
+        System.out.println("Minimalna liczba chromatyczna grafu: " + minColors);
+    }
+}
